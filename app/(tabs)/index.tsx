@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import TaskForm from "../../components/TaskForm";
+import TaskItem from "../../components/TaskItem";
 import { supabase } from "../../lib/supabase";
 
 type Task = {
@@ -128,21 +130,7 @@ export default function HomeScreen() {
         <Text style={headerStyles.title}>TaskFlow</Text>
       </View>
 
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Task"
-          value={task}
-          onChangeText={setTask}
-        />
-        <TouchableOpacity
-          style={styles.addButton}
-          activeOpacity={0.8}
-          onPress={addTask}
-        >
-          <MaterialIcons name="add" size={22} color="#fff" />
-        </TouchableOpacity>
-      </View>
+      <TaskForm task={task} setTask={setTask} onAdd={addTask} />
 
       {editingTaskId ? (
         <View style={styles.editRow}>
@@ -194,23 +182,11 @@ export default function HomeScreen() {
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
             <View style={styles.taskRowWrapper}>
-              <TouchableOpacity
-                style={styles.taskRowTouchable}
-                onPress={() => toggleTask(item)}
-                onLongPress={() => deleteTask(item.id)}
-              >
-                <View style={styles.taskRow}>
-                  <MaterialIcons
-                    style={styles.taskIcon}
-                    name={
-                      item.completed ? "check-box" : "check-box-outline-blank"
-                    }
-                    size={20}
-                    color={item.completed ? "#2E5BBA" : "#5A6472"}
-                  />
-                  <Text style={styles.taskText}>{item.title}</Text>
-                </View>
-              </TouchableOpacity>
+              <TaskItem
+                item={item}
+                onToggle={toggleTask}
+                onDelete={deleteTask}
+              />
               <TouchableOpacity
                 style={styles.editAction}
                 activeOpacity={0.7}
@@ -246,38 +222,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     backgroundColor: "#fff",
-  },
-  inputRow: {
-    flexDirection: "row",
-    marginBottom: 20,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 10,
-    marginRight: 10,
-  },
-  addButton: {
-    backgroundColor: "#2E5BBA",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  taskRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  taskIcon: {
-    marginRight: 10,
-  },
-  taskText: {
-    fontSize: 15,
   },
   messageContainer: {
     paddingVertical: 24,
@@ -338,9 +282,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-  },
-  taskRowTouchable: {
-    flex: 1,
   },
   editAction: {
     padding: 8,
